@@ -1,11 +1,10 @@
+import javafx.scene.input.KeyCode;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.regex.*;
 
 
 public class Window extends JFrame {
@@ -19,6 +18,9 @@ public class Window extends JFrame {
     JPanel outputPanel;
     JTextField outputTopic;
     JTextField sortResult;
+    JButton resetButton;
+    JTextField errorField;
+
 
     ArrayList<String> currentNumbers = new ArrayList<>();
 
@@ -28,11 +30,17 @@ public class Window extends JFrame {
         createInputPanel();
         createOutputPanel();
 
+        errorField = new JTextField("");
+        errorField.setBackground(this.getBackground());
+        errorField.setForeground(Color.RED);
+        errorField.setPreferredSize(new Dimension(50, 20));
+        errorField.setEditable(false);
+
         setLayout(new BorderLayout());
         add(inputPanel, BorderLayout.NORTH);
-        add(outputPanel, BorderLayout.SOUTH);
+        add(outputPanel, BorderLayout.CENTER);
+        add(errorField, BorderLayout.SOUTH);
         pack();
-        //setSize(650, 400);
     }
 
     private void createInputPanel(){
@@ -51,50 +59,61 @@ public class Window extends JFrame {
         inputField.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                currentNumbers.add(inputField.getText());
-                currentInput.setText(currentInput.getText() + inputField.getText() + " ");
-
-                inputField.setCaretPosition(0);
-                inputField.setText(null);
+                if(!(inputField.getText().isEmpty()))
+                {
+                    currentNumbers.add(inputField.getText());
+                    currentInput.setText(currentInput.getText() + inputField.getText() + " ");
+                    inputField.setCaretPosition(0);
+                    inputField.setText(null);
+                }
             }
         });
         inputField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 char temp = e.getKeyChar();
-                System.out.print(temp + " ");
                 super.keyTyped(e);
+                errorField.setText(null);
                 if(!Character.isDigit(temp))
                 {
                     if(temp != '.')
                     {
+                        errorField.setText("Incorrect input");
                         e.consume();
                     }
                     if(temp == '.' && (inputField.getText().contains(".") || inputField.getText().equals("")))
                     {
+                        errorField.setText("Incorrect input");
                         e.consume();
                     }
                 }
             }
         });
-
 
         sortButton = new JButton("Sort");
         sortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                BubbleSorter.sort(currentNumbers);
+                try
+                {
+                    BubbleSorter.sort(currentNumbers);
+                }
+                catch (NumberFormatException nfe)
+                {
+                    errorField.setText("Incorrect input");
+                }
                 sortResult.setText("");
                 for (int i = 0; i < currentNumbers.size(); i++)
                 {
                     sortResult.setText(sortResult.getText() + currentNumbers.get(i) + " ");
                 }
+                errorField.setText(null);
             }
         });
 
         currentInput = new JTextField("", 10);
+        currentInput.setEditable(false);
+        currentInput.setBackground(Color.white);
 
         inputPanel.add(inputTopic);
         inputPanel.add(inputField);
@@ -112,7 +131,19 @@ public class Window extends JFrame {
         outputTopic.setEditable(false);
         outputTopic.setFont(new Font("SansSerif", Font.BOLD, 20));
         sortResult = new JTextField("", 20);
+        sortResult.setEditable(false);
+        sortResult.setBackground(Color.white);
+        resetButton = new JButton("Reset");
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentNumbers = new ArrayList<>();
+                currentInput.setText(null);
+                sortResult.setText(null);
+            }
+        });
         outputPanel.add(outputTopic);
         outputPanel.add(sortResult);
+        outputPanel.add(resetButton);
     }
 }

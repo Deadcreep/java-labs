@@ -26,11 +26,12 @@ public class BubbleSorter{
         {
             for(int i =1; i< items.size(); i++){
                 for(int j = 0; j < (items.size() - i); j ++){
-                    if((Double.parseDouble((String) items.get(j))) > (Double.parseDouble((String) items.get(j+1)))){
-                        T tmp = items.get(j);
-                        items.set(j, items.get(j+1));
-                        items.set(j+1, tmp);
-                    }
+                        if ((Double.parseDouble((String) items.get(j))) > (Double.parseDouble((String) items.get(j + 1)))) {
+                            T tmp = items.get(j);
+                            items.set(j, items.get(j + 1));
+                            items.set(j + 1, tmp);
+                        }
+
                 }
             }
         }
