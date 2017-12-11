@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -20,12 +21,13 @@ public class Window extends JFrame {
     JTextField sortResult;
     JButton resetButton;
     JTextField errorField;
-
+    Client client;
 
     ArrayList<String> currentNumbers = new ArrayList<>();
 
-    Window(){
+    Window() throws IOException, InterruptedException {
         super("Bubble sort");
+        client = new Client();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         createInputPanel();
         createOutputPanel();
@@ -41,6 +43,50 @@ public class Window extends JFrame {
         add(outputPanel, BorderLayout.CENTER);
         add(errorField, BorderLayout.SOUTH);
         pack();
+
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    client.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                finally {
+                    System.exit(0);
+                }
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
     }
 
     private void createInputPanel(){
@@ -97,10 +143,15 @@ public class Window extends JFrame {
                 try
                 {
                     BubbleSorter.sort(currentNumbers);
+                    client.sendMessage(String.join(" ", currentNumbers));
                 }
                 catch (NumberFormatException nfe)
                 {
                     errorField.setText("Incorrect input");
+                }
+                catch (IOException ioe)
+                {
+
                 }
                 sortResult.setText("");
                 for (int i = 0; i < currentNumbers.size(); i++)
@@ -110,6 +161,7 @@ public class Window extends JFrame {
                 errorField.setText(null);
             }
         });
+
 
         currentInput = new JTextField("", 10);
         currentInput.setEditable(false);
