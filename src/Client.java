@@ -1,73 +1,88 @@
-import java.awt.*;
+import org.omg.CORBA.TIMEOUT;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.sql.Time;
+import java.util.EventObject;
 import java.util.logging.Logger;
 
 
-public class Client {
+class Client implements CustomListener {
     private static Logger log = Logger.getLogger(Client.class.getName());
-    Socket socket;
-    BufferedReader br;
-    DataOutputStream oos;
-    DataInputStream ois;
-    String currentMessage;
-    String receiveMessage;
+    private Socket socket;
+    private DataOutputStream oos;
+    private DataInputStream ois;
+    private String receiveMessage;
+    Thread receiveThread;
+    CustomListener windowListener;
 
-
-    public class CustomListener implements ActionListener
-    {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-        }
-    }
-
-    public Client() throws IOException, InterruptedException {
+    Client() throws IOException, InterruptedException {
         socket = new Socket("localhost", 8778);
-        br = new BufferedReader(new InputStreamReader(System.in));
         oos = new DataOutputStream(socket.getOutputStream());
-        ois = new DataInputStream(socket.getInputStream());
-        listening();
-
+        receiveThread = new Thread( () -> {
+            try
+            {
+                log.info("Client connected to server");
+                while (!socket.isOutputShutdown())
+                {
+                    ois = new DataInputStream(socket.getInputStream());
+                    Thread.sleep( 100 );
+                    if(ois.available() > 0) {
+                        receiveMessage = ois.readUTF();
+                        log.info( "Receive message: " + receiveMessage );
+                        windowListener.raiseEvent(new CustomEvent (receiveMessage));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        } );
+        receiveThread.setName( "Thread" + Thread.activeCount());
+        receiveThread.start();
     }
 
-    public void sendMessage(String message) throws IOException {
-        oos.writeUTF(message);
-        oos.flush();
-        log.info("Client sent message " + message + " to server.");
+    private void sendMessage(String message){
+        try
+        {
+            oos.writeUTF( message );
+            oos.flush();
+            log.info( "Client sent message " + message + " to server." );
+        }
+        catch (IOException ioe)
+        {
+            log.info( ioe.getMessage() + " " + ioe.getStackTrace());
+        }
     }
 
     public void close() throws IOException {
         oos.writeUTF("quit");
         socket.close();
-        br.close();
+        try {
+            receiveThread.join();
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         oos.flush();
         oos.close();
         ois.close();
         log.info("Client closed, check isClosed: " + socket.isClosed());
     }
 
-    public void listening() throws InterruptedException {
-        try
-        {
-            log.info("Client connected to server");
-            while (!socket.isOutputShutdown())
-            {
-                receiveMessage = ois.readUTF();
-                System.out.print(receiveMessage);
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void raiseEvent(CustomEvent e) {
+        String message = ((JTextField)e.getSource()).getText();
+        sendMessage( message );
     }
 
-
+    public void addReceiveEventListener(CustomListener listener)
+    {
+        this.windowListener = listener;
+    }
 }

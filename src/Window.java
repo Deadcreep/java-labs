@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class Window extends JFrame {
+public class Window extends JFrame implements CustomListener{
 
     JPanel inputPanel;
     JTextField inputTopic;
@@ -19,15 +19,14 @@ public class Window extends JFrame {
     JPanel outputPanel;
     JTextField outputTopic;
     JTextField sortResult;
-    JButton resetButton;
     JTextField errorField;
-    Client client;
+
+    CustomListener listener;
 
     ArrayList<String> currentNumbers = new ArrayList<>();
 
     Window() throws IOException, InterruptedException {
         super("Bubble sort");
-        client = new Client();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         createInputPanel();
         createOutputPanel();
@@ -43,50 +42,6 @@ public class Window extends JFrame {
         add(outputPanel, BorderLayout.CENTER);
         add(errorField, BorderLayout.SOUTH);
         pack();
-
-        addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                try {
-                    client.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                finally {
-                    System.exit(0);
-                }
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-
-            }
-        });
     }
 
     private void createInputPanel(){
@@ -140,28 +95,16 @@ public class Window extends JFrame {
         sortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try
-                {
-                    BubbleSorter.sort(currentNumbers);
-                    client.sendMessage(String.join(" ", currentNumbers));
-                }
-                catch (NumberFormatException nfe)
-                {
-                    errorField.setText("Incorrect input");
-                }
-                catch (IOException ioe)
-                {
-
-                }
                 sortResult.setText("");
                 for (int i = 0; i < currentNumbers.size(); i++)
                 {
                     sortResult.setText(sortResult.getText() + currentNumbers.get(i) + " ");
                 }
                 errorField.setText(null);
+                listener.raiseEvent( new CustomEvent(currentInput) );
+                currentInput.setText(null);
             }
         });
-
 
         currentInput = new JTextField("", 10);
         currentInput.setEditable(false);
@@ -185,17 +128,19 @@ public class Window extends JFrame {
         sortResult = new JTextField("", 20);
         sortResult.setEditable(false);
         sortResult.setBackground(Color.white);
-        resetButton = new JButton("Reset");
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentNumbers = new ArrayList<>();
-                currentInput.setText(null);
-                sortResult.setText(null);
-            }
-        });
         outputPanel.add(outputTopic);
         outputPanel.add(sortResult);
-        outputPanel.add(resetButton);
+    }
+
+    public void addSortButtonListener(CustomListener listener)
+    {
+        this.listener = listener;
+    }
+
+    @Override
+    public void raiseEvent(CustomEvent e) {
+        String message = (String) e.getSource();
+        System.out.print( "Raise event message : " + message );
+        sortResult.setText(message);
     }
 }

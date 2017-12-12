@@ -1,5 +1,3 @@
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 import javax.swing.*;
 import java.io.IOException;
 
@@ -9,8 +7,11 @@ public class Test {
     {
         try
         {
-            JFrame Window = new Window();
-            Window.setVisible(true);
+            Client client = new Client();
+            Window window = new Window();
+            client.addReceiveEventListener(window);
+            window.addSortButtonListener(client);
+            window.setVisible(true);
 
             Integer[] intItems = {1, 6, 3, 9, 4, 9, 11, 90, 324, 65, 23};
             Double[] doubleItems = {0.1, 4.5, 7.8, 32.4, 10.14, 10.0014, 11d};
@@ -18,14 +19,14 @@ public class Test {
 
             System.out.println("Int sort:");
             BubbleSorter.sort(intItems);
-            for (int i = 0; i < intItems.length; i++) {
-                System.out.print(intItems[i] + " ");
+            for (Integer intItem : intItems) {
+                System.out.print( intItem + " " );
             }
 
             System.out.println("\nDouble sort:");
             BubbleSorter.sort(doubleItems);
-            for (int i = 0; i < doubleItems.length; i++) {
-                System.out.print(doubleItems[i] + " ");
+            for (Double doubleItem : doubleItems) {
+                System.out.print( doubleItem + " " );
             }
 
             System.out.println("\nString sort:");
@@ -37,7 +38,7 @@ public class Test {
         }
         catch (IOException ioe)
         {
-            System.out.println(ioe);
+            System.out.println( ioe);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

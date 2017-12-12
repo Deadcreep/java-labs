@@ -21,7 +21,7 @@ public class BubbleSorter{
         }
     }
 
-    public static <T> void sort(ArrayList<T> items)throws IllegalArgumentException, NumberFormatException {
+    public static <T> void sort(ArrayList<T> items)throws IllegalArgumentException {
         if(items.get(0) instanceof String)
         {
             for(int i =1; i< items.size(); i++){
@@ -31,7 +31,6 @@ public class BubbleSorter{
                             items.set(j, items.get(j + 1));
                             items.set(j + 1, tmp);
                         }
-
                 }
             }
         }
