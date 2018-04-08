@@ -1,3 +1,5 @@
+package syntax;
+
 import java.util.ArrayList;
 
 public class BubbleSorter{

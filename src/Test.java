@@ -1,4 +1,7 @@
-import javax.swing.*;
+//import network.Client;
+import network.Window;
+import syntax.BubbleSorter;
+
 import java.io.IOException;
 
 public class Test {
@@ -7,11 +10,11 @@ public class Test {
     {
         try
         {
-            Client client = new Client();
-            Window window = new Window();
-            client.addReceiveEventListener(window);
-            window.addSortButtonListener(client);
-            window.setVisible(true);
+           // Client client = new Client();
+          //  Window window = new Window();
+         //   client.addReceiveEventListener(window);
+        //    window.addSortButtonListener(client);
+          //  window.setVisible(true);
 
             Integer[] intItems = {1, 6, 3, 9, 4, 9, 11, 90, 324, 65, 23};
             Double[] doubleItems = {0.1, 4.5, 7.8, 32.4, 10.14, 10.0014, 11d};
@@ -36,11 +39,11 @@ public class Test {
         {
             System.out.println("Incorrect argument");
         }
-        catch (IOException ioe)
+       /* catch (IOException ioe)
         {
             System.out.println( ioe);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
