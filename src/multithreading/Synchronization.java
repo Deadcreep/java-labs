@@ -1,46 +1,53 @@
 package multithreading;
 
-import java.util.concurrent.atomic.*;
 
 public class Synchronization
 {
     public static void main(String[] args) throws InterruptedException {
-        Counter counter = new Counter();
-        for(int i = 0; i < 200; i++) {
-            CounterThread ct = new CounterThread(counter);
+
+        long atomicStartTime = System.currentTimeMillis();
+        AtomicCounter atomicCounter = new AtomicCounter();
+        for(int i = 0; i < 20000; i++) {
+            CounterThread ct = new CounterThread( atomicCounter );
             ct.start();
         }
-        Thread.sleep(1000);
+        Thread.sleep(10000);
+        long atomicStopTime = System.currentTimeMillis();
+        long atomicElapsedTime = atomicStopTime - atomicStartTime - 10000;
+        System.out.println("AtomicCounter:" + atomicCounter.getCounter());
+        System.out.println("Work time:" + atomicElapsedTime);
 
-        System.out.println("Counter:" + counter.getCounter());
+        long syncStartTime = System.currentTimeMillis();
+
+        SynchronizedCounter syncCounter = new SynchronizedCounter();
+        for(int i = 0; i < 20000; i++) {
+            CounterThread ct = new CounterThread( syncCounter );
+            ct.start();
+        }
+        Thread.sleep(10000);
+        long syncStopTime = System.currentTimeMillis();
+        long syncElapsedTime = syncStopTime - syncStartTime - 10000;
+        System.out.println("\nSyncCounter:" + syncCounter.getCounter());
+        System.out.println("Work time:" + syncElapsedTime);
+        long deltaTime = atomicElapsedTime - syncElapsedTime;
+        System.out.println("Difference:" + deltaTime);
     }
 }
 
-class Counter
-{
-    private AtomicLong counter = new AtomicLong( 0 );
 
-    public void increaseCounter() {
-        counter.incrementAndGet();
-    }
-
-    public long getCounter() {
-        return counter.get();
-    }
-}
 
 class CounterThread extends Thread
 {
-    private Counter counter;
+    private Counter ct;
 
-    public CounterThread(Counter counter) {
-        this.counter = counter;
+    CounterThread(Counter counter) {
+        this.ct = counter;
     }
 
     @Override
     public void run() {
-        for(int i = 0; i < 1000; i++) {
-            counter.increaseCounter();
+        for(int i = 0; i < 10000; i++) {
+            ct.increaseCounter();
         }
     }
 }

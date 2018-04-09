@@ -1,18 +1,18 @@
-package com.testservlet;
+package servlet.src.com.testservlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+//import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/MyServlet")
+//@WebServlet("/MyServlet")
 public class MyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Servlet do get");
+		System.out.println("servlet do get");
 		Double number = Double.valueOf((request.getParameter("number")));
 		
 		response.getWriter().println("<!DOCTYPE HTML>");
@@ -21,7 +21,7 @@ public class MyServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		System.out.println("Servlet do post");
+		System.out.println("servlet do post");
 		doGet(request, response);
 	}
 
