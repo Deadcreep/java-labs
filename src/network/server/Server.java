@@ -28,7 +28,7 @@ public class Server {
                 new Thread( client ).start();
             }
         } catch (IOException ex) {
-            logger.log( Level.INFO, "Exception ", ex );
+            logger.log( Level.WARNING, "Exception ", ex );
         } finally {
             try {
                 clientSocket.close();
@@ -36,7 +36,7 @@ public class Server {
                 serverSocket.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
-                logger.log( Level.INFO, "Exception ", ex );
+                logger.log( Level.WARNING, "Exception ", ex );
             }
         }
     }
@@ -54,6 +54,7 @@ public class Server {
     }
 
     public synchronized void removeClient(ClientHandler client) {
+
         clients.remove( client );
     }
 

@@ -35,7 +35,7 @@ public class ClientHandler implements Runnable {
             this.inMessage = new Scanner(socket.getInputStream());
             logger.info("New client is accepted for handling");
         } catch (IOException ex) {
-            logger.log(Level.INFO, "Exception ", ex);
+            logger.log(Level.WARNING, "Exception ", ex);
         }
     }
 
@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
             }
         }
         catch (InterruptedException ex) {
-            logger.log(Level.INFO, "Exception ", ex);
+            logger.log(Level.WARNING, "Exception ", ex);
         }
         finally {
             this.close();
@@ -85,7 +85,7 @@ public class ClientHandler implements Runnable {
             outMessage.println(msg);
             outMessage.flush();
         } catch (Exception ex) {
-            logger.log(Level.INFO, "Exception ", ex);
+            logger.log(Level.WARNING, "Exception ", ex);
         }
     }
 		// клиент выходит из чата
